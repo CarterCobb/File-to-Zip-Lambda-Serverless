@@ -15,7 +15,8 @@ provider:
             # - "s3:ListBucket"
             # - "s3:GetObject"
             # - "s3:PutObjectAcl"
-          Resource: "arn:aws:s3:::${self:custom.bucket}/*"
+          Resource: 
+            - "arn:aws:s3:::${self:custom.buckets.test-zipper}/*"
 
 package:
   patterns:
@@ -29,12 +30,12 @@ package:
 functions:
   s3-zipper:
     handler: handler.handler
-    description: Zips files after they are uploaded to the ${self:buckets.test-zipper} s3 bucket
+    description: Zips files after they are uploaded to an approved S3 bucket
     layers: 
       - { Ref: ModulesLambdaLayer }
     events:
       - s3:
-          bucket: ${self:custom.bucket}
+          bucket: ${self:custom.buckets.test-zipper}
           event: s3:ObjectCreated:*
           existing: true
 
@@ -44,5 +45,6 @@ layers:
     path: layer
 
 # Use env var for bucket or default to `s3-test-zipper`
-buckets:
-  test-zipper: ${env:BUCKET, 's3-test-zipper'}
+custom:
+  buckets:
+    test-zipper: ${env:BUCKET, 's3-test-zipper'}
