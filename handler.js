@@ -1,9 +1,10 @@
 const Archiver = require("archiver");
 const AWS = require("aws-sdk");
 const { Stream } = require("stream");
+const path = require("path");
 
 // Bring in AWS S3 funtionality
-const s3 = new AWS.S3({ region: "us-west-1" });
+const s3 = new AWS.S3({ region: "us-west-2" });
 
 const ARCHIVE_CONTENT_TYPE = "application/zip";
 
@@ -36,7 +37,7 @@ class ResponseHandler {
    */
   static errorResponse(error, context) {
     return {
-      statusCode: 200,
+      statusCode: 500,
       body: JSON.stringify({
         message: error.message,
         request_id: context.awsRequestId,
@@ -55,6 +56,7 @@ class ZipHandler {
    * @param {String} key the AWS S3 resource key
    * @param {String} bucket the AWS S3 bucket name
    * @param {Object} context the lambda context
+   * @param {String} archiveFilePath the new resource zip file id
    * @param {String} archiveFolderPath The path to the zip resource in AWS S3. e.g '/zip/files/{{key}}'. defaults to ''
    * @param {String} archiveFormat The zip archive type. defaults to 'zip'
    */
@@ -62,13 +64,15 @@ class ZipHandler {
     key,
     bucket,
     context,
+    archiveFilePath,
     archiveFolderPath = "",
     archiveFormat = "zip"
   ) {
     this.key = key;
     this.bucket = bucket;
     this.context = context;
-    this.archiveFilePath = `${archiveFolderPath}/${key}`;
+    this.archiveFilePath = archiveFilePath;
+    this.archiveFolderPath = archiveFolderPath;
     this.archiveFormat = archiveFormat;
   }
 
@@ -79,7 +83,7 @@ class ZipHandler {
   s3DownloadStream() {
     return {
       stream: this._readStream(),
-      filename: this.archiveFilePath,
+      filename: `${this.archiveFolderPath}/${this.key}`,
     };
   }
 
@@ -114,7 +118,7 @@ class ZipHandler {
       console.log(error);
       return ResponseHandler.errorResponse(error, this.context);
     });
-    console.log("done uploading");
+    console.log("done");
     return ResponseHandler.successResponse("uploaded", this.context);
   }
 
@@ -145,7 +149,7 @@ class ZipHandler {
     };
     return {
       s3StreamUpload: streamPassThrough,
-      uploaded: s3.upload(params),
+      uploaded: s3.upload(params, (err) => console.log(err)),
     };
   }
 }
@@ -158,6 +162,8 @@ class ZipHandler {
 exports.handler = async function (event, context) {
   const key = event.Records[0].s3.object.key;
   const bucket = event.Records[0].s3.bucket.name;
-  const zipHandler = new ZipHandler(key, bucket, context, "zip");
+  const archiveFilePath = `zip/${path.parse(key).name}.zip`;
+  console.log(key, bucket, archiveFilePath);
+  const zipHandler = new ZipHandler(key, bucket, context, archiveFilePath);
   return await zipHandler.process();
 };
