@@ -1,0 +1,8 @@
+# package directories
+node_modules/
+package-*.json
+jspm_packages
+.env
+
+# Serverless directories
+.serverless
