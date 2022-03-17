@@ -10,11 +10,11 @@ provider:
     role:
       statements:
         - Effect: Allow
-          Action: "s3:*" # Allow all s3 actions. -> its probably good to lock this down but for demo reasons this is quicker.
-            # - "s3:PutObject"
-            # - "s3:ListBucket"
-            # - "s3:GetObject"
-            # - "s3:PutObjectAcl"
+          Action:
+            - "s3:PutObject"
+            - "s3:ListBucket"
+            - "s3:GetObject"
+            - "s3:PutObjectAcl"
           Resource: 
             - "arn:aws:s3:::${self:custom.buckets.test-zipper}/*"
 
@@ -24,7 +24,6 @@ package:
     - '!package.json'
     - '!package-lock.json'
     - '!.serverless/**'
-    - 'Layers/*'
 
 # Lambda funtions
 functions:
