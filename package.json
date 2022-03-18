@@ -1,12 +1,12 @@
 {
   "name": "s3lambda",
   "version": "1.0.0",
-  "description": "",
+  "description": "AWS Lambda to convert new files to zip files.",
   "main": "handler.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Carter J. Cobb",
   "license": "ISC",
   "dependencies": {
     "archiver": "^5.3.0",
