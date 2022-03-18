@@ -1,6 +1,6 @@
 # AWS S3 Lambda Zipper
 
-This prject contains an example for an [AWS Lambda](https://aws.amazon.com/lambda/) that is triggered on an [AWS S3](https://aws.amazon.com/s3/) bucket create event. The lambda takes the new file, converts it to a zip file and re-uploads it back to the AWS S3 bucket.
+This project contains an example for an [AWS Lambda](https://aws.amazon.com/lambda/) that is triggered on an [AWS S3](https://aws.amazon.com/s3/) bucket create event. The lambda takes the new file, converts it to a zip file and re-uploads it back to the AWS S3 bucket.
 
 ## Technology Stack
 
