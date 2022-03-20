@@ -97,10 +97,7 @@ class ZipHandler {
 
     await new Promise((resolve, reject) => {
       const archive = Archiver(this.archiveFormat);
-      archive.on("error", (error) => {
-        console.log(error);
-        return ResponseHandler.errorResponse(error, this.context);
-      });
+      archive.on("error", reject);
       console.log("starting upload");
       s3StreamUpload.on("close", resolve);
       s3StreamUpload.on("end", resolve);
